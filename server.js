@@ -6,7 +6,6 @@ const mongoose = require('mongoose');
 const User = require('./models/User');
 const Message = require('./models/Message');
 
-module.exports = mongoose.model('User', userSchema);
 const path = require('path');
 const cors = require('cors');
 
@@ -21,14 +20,6 @@ app.use(express.json());
 mongoose.connect(process.env.MONGO_URI || 'mongodb+srv://chattyadmin:Y6bg1fuB1YrjHqH0@cluster0.aa4ki7p.mongodb.net/chattydb')
   .then(() => console.log('Connected to MongoDB'))
   .catch(err => console.log(err));
-
-// 2. SCHEMAS
-const messageSchema = new mongoose.Schema({
-  username: String,
-  text: String,
-  createdAt: { type: Date, default: Date.now }
-});
-const Message = mongoose.model('Message', messageSchema);
 
 // 3. ROUTES
 app.get('/', (req, res) => {
