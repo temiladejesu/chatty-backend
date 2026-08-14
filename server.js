@@ -132,6 +132,6 @@ app.post('/api/messages', auth, async (req, res) => { // 'auth' makes it protect
     res.status(500).json({ error: err.message });
   }
 });
-server.listen(PORT, '0.0.0.0', () => {
+http.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
 });
