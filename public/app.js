@@ -1,6 +1,4 @@
 // app.js — frontend logic for the chat app.
-// Handles: auth (login/register), contact list, real-time messaging via socket.io,
-// typing indicators, online presence, read receipts.
 const API = 'https://chatty-backend-1-jp3h.onrender.com';
 let state = {
   token: localStorage.getItem('chatty_token') || null,
@@ -58,7 +56,7 @@ function fmtTime(ts) {
 }
 
 function authHeaders() {
-  return { 'Content-Type': 'application/json', Authorization: `Bearer ${state.token}` };
+  return { 'Content-Type': 'application/json', Authorization: Bearer ${state.token} };
 }
 
 // ---------- Auth screen wiring ----------
@@ -83,7 +81,7 @@ loginForm.addEventListener('submit', async (e) => {
   const username = document.getElementById('login-username').value.trim();
   const password = document.getElementById('login-password').value;
   try {
-    const res = await fetch(`${API}/api/login`, {
+    const res = await fetch(${API}/api/login, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password }),
@@ -103,7 +101,7 @@ registerForm.addEventListener('submit', async (e) => {
   const username = document.getElementById('register-username').value.trim();
   const password = document.getElementById('register-password').value;
   try {
-    const res = await fetch(`${API}/api/register`, {
+    const res = await fetch(${API}/api/register, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, username, password }),
@@ -128,7 +126,7 @@ logoutBtn.addEventListener('click', () => {
   localStorage.removeItem('chatty_token');
   localStorage.removeItem('chatty_me');
   if (socket) socket.disconnect();
-  state = { ...state, token: null, me: null, contacts: [], activeContact: null, messagesByUser: {} };
+  state = {...state, token: null, me: null, contacts: [], activeContact: null, messagesByUser: {} };
   appScreen.classList.add('hidden');
   authScreen.classList.remove('hidden');
 });
@@ -147,7 +145,7 @@ async function enterApp() {
 }
 
 async function loadContacts() {
-  const res = await fetch(`${API}/api/users`, { headers: authHeaders() });
+  const res = await fetch(${API}/api/users, { headers: authHeaders() });
   state.contacts = await res.json();
   renderContactList();
 }
@@ -161,7 +159,7 @@ function renderContactList(filter = '') {
 
   filtered.forEach(contact => {
     const li = document.createElement('li');
-    li.className = 'contact-item' + (state.activeContact && state.activeContact.id === contact.id ? ' active' : '');
+    li.className = 'contact-item' + (state.activeContact && state.activeContact.id === contact.id? ' active' : '');
 
     const avatar = document.createElement('span');
     avatar.className = 'avatar';
@@ -182,7 +180,7 @@ function renderContactList(filter = '') {
     const lastMsgs = state.messagesByUser[contact.id] || [];
     const sub = document.createElement('div');
     sub.className = 'contact-item-sub';
-    sub.textContent = lastMsgs.length ? lastMsgs[lastMsgs.length - 1].text : `@${contact.username}`;
+    sub.textContent = lastMsgs.length? lastMsgs[lastMsgs.length - 1].text : @${contact.username};
     info.appendChild(nameEl);
     info.appendChild(sub);
     li.appendChild(info);
@@ -207,7 +205,7 @@ function connectSocket() {
   });
 
   socket.on('new_message', (message) => {
-    const otherId = message.from === state.me.id ? message.to : message.from;
+    const otherId = message.from === state.me.id? message.to : message.from;
     if (!state.messagesByUser[otherId]) state.messagesByUser[otherId] = [];
     state.messagesByUser[otherId].push(message);
 
@@ -229,8 +227,7 @@ function connectSocket() {
       typingIndicator.classList.add('hidden');
     }
   });
-
-  socket.on('messages_read', ({ byUserId }) => {
+ socket.on('messages_read', ({ byUserId }) => {
     if (state.activeContact && state.activeContact.id === byUserId) {
       (state.messagesByUser[byUserId] || []).forEach(m => {
         if (m.from === state.me.id) m.status = 'read';
@@ -253,7 +250,7 @@ async function openConversation(contact) {
   renderContactList(contactSearch.value);
 
   if (!state.messagesByUser[contact.id]) {
-    const res = await fetch(`${API}/api/messages/${contact.id}`, { headers: authHeaders() });
+    const res = await fetch(${API}/api/messages/${contact.id}, { headers: authHeaders() });
     state.messagesByUser[contact.id] = await res.json();
   }
   renderMessages();
@@ -262,7 +259,7 @@ async function openConversation(contact) {
 }
 
 function updateChatStatus() {
-  chatStatus.textContent = state.onlineUserIds.has(state.activeContact.id) ? 'online' : 'offline';
+  chatStatus.textContent = state.onlineUserIds.has(state.activeContact.id)? 'online' : 'offline';
 }
 
 function renderMessages() {
@@ -270,7 +267,7 @@ function renderMessages() {
   messagesEl.innerHTML = '';
   msgs.forEach(m => {
     const row = document.createElement('div');
-    row.className = 'msg-row ' + (m.from === state.me.id ? 'mine' : 'theirs');
+    row.className = 'msg-row ' + (m.from === state.me.id? 'mine' : 'theirs');
 
     const bubble = document.createElement('div');
     bubble.className = 'bubble';
@@ -281,8 +278,8 @@ function renderMessages() {
     meta.textContent = fmtTime(m.timestamp);
     if (m.from === state.me.id) {
       const tick = document.createElement('span');
-      tick.textContent = m.status === 'read' ? '✓✓' : '✓';
-      tick.className = m.status === 'read' ? 'tick-read' : '';
+      tick.textContent = m.status === 'read'? '✓✓' : '✓';
+      tick.className = m.status === 'read'? 'tick-read' : '';
       meta.appendChild(tick);
     }
     bubble.appendChild(meta);
@@ -297,7 +294,7 @@ function renderMessages() {
 messageForm.addEventListener('submit', (e) => {
   e.preventDefault();
   const text = messageInput.value.trim();
-  if (!text || !state.activeContact) return;
+  if (!text ||!state.activeContact) return;
   socket.emit('private_message', { toUserId: state.activeContact.id, text });
   socket.emit('stop_typing', { toUserId: state.activeContact.id });
   messageInput.value = '';
@@ -311,9 +308,3 @@ messageInput.addEventListener('input', () => {
     socket.emit('stop_typing', { toUserId: state.activeContact.id });
   }, 1500);
 });
-
-// ---------- Bootstrap ----------
-
-if (state.token && state.me) {
-  enterApp();
-}
