@@ -1,78 +1,32 @@
-<<script src="/socket.io/socket.io.js"></script>
-<script src="/app.js"></script>
-<script>
-  const socket = io();
-  let username = "";
-  let typingTimeout;
-  const messages = document.getElementById('messages');
-  const typingDiv = document.getElementById('typing');
-
-  // 1. JOIN CHAT FUNCTION FIRST
-  function joinChat() {
-    const nameInput = document.getElementById('usernameInput');
-    username = nameInput.value.trim() || "Anonymous";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chatty</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div id="app">
+    <div id="login">
+      <h2>Join Chatty</h2>
+      <input id="usernameInput" placeholder="Enter username" />
+      <button onclick="joinChat()">Join</button>
+    </div>
     
-    document.querySelector('.header.avatar').textContent = username[0].toUpperCase();
-    document.getElementById('login').style.display = 'none';
-    loadOldMessages();
-  }
-
-  // 2. ENTER KEY WORKS TOO
-  document.getElementById('usernameInput').addEventListener('keypress', function(e) {
-    if(e.key === 'Enter') joinChat();
-  });
-
-  function loadOldMessages() {
-    fetch('/api/messages')
-   .then(res => res.json())
-   .then(oldMsgs => {
-      oldMsgs.forEach(addMessageToUI);
-    })
-  }
-
-  function getTime() {
-    return new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-  }
-
-  function addMessageToUI(msg) {
-    const msgDiv = document.createElement('div');
-    msgDiv.classList.add('msg');
-    if(msg.username === username) msgDiv.classList.add('me');
-    
-    msgDiv.innerHTML = 
-      <div class="bubble">
-        <div class="username" style="color: ${msg.username === username? '#25d366' : '#53bdeb'}">${msg.username}</div>
-        <div>${msg.text}<span class="time">${getTime()} <span class="ticks">✓✓</span></span></div>
+    <div id="chat" style="display:none">
+      <div class="header">
+        <span class="header avatar"></span>
+        <span id="headerName"></span>
       </div>
-    ;
-    messages.appendChild(msgDiv);
-    messages.scrollTop = messages.scrollHeight;
-  }
+      <div id="messages"></div>
+      <div id="typing"></div>
+      <input id="messageInput" placeholder="Type a message..." />
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
 
-  document.getElementById('input').addEventListener('input', () => {
-    socket.emit('typing', username);
-    clearTimeout(typingTimeout);
-    typingTimeout = setTimeout(() => socket.emit('stop typing'), 2000);
-  });
-
-  document.getElementById('form').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const input = document.getElementById('input');
-    if (input.value) {
-      socket.emit('stop typing');
-      socket.emit('chat message', { username: username, text: input.value });
-      input.value = '';
-    }
-  });
-
-  socket.on('chat message', (msg) => {
-    addMessageToUI(msg);
-  });
-
-  socket.on('typing', (name) => {
-    if(name!== username) typingDiv.textContent = ${name} is typing...;
-  });
-  socket.on('stop typing', () => {
-    typingDiv.textContent = '';
-  });
-</script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/app.js"></script>
+</body>
+</html>
