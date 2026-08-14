@@ -132,7 +132,6 @@ app.post('/api/messages', auth, async (req, res) => { // 'auth' makes it protect
     res.status(500).json({ error: err.message });
   }
 });
-const PORT = process.env.PORT || 10000;
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
