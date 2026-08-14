@@ -132,6 +132,13 @@ app.post('/api/messages', auth, async (req, res) => { // 'auth' makes it protect
     res.status(500).json({ error: err.message });
   }
 });
+const path = require('path');
+app.use(express.static(path.join(__dirname, 'public')));
+
+// For any route not /api, send index.html
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 http.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
 });

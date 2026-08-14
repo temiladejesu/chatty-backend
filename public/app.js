@@ -2,7 +2,7 @@
 // Handles: auth (login/register), contact list, real-time messaging via socket.io,
 // typing indicators, online presence, read receipts.
 
-const API = ''; // same-origin
+const API = 'https://chatty-backend-1-jp3h.onrender.com';
 
 let state = {
   token: localStorage.getItem('chatty_token') || null,
@@ -199,7 +199,7 @@ contactSearch.addEventListener('input', () => renderContactList(contactSearch.va
 // ---------- Socket.io ----------
 
 function connectSocket() {
-  socket = io({ auth: { token: state.token } });
+  socket = io(API, { auth: { token: state.token } });
 
   socket.on('presence', ({ userId, online }) => {
     if (online) state.onlineUserIds.add(userId);
