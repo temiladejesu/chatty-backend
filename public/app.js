@@ -1,9 +1,7 @@
 // app.js — frontend logic for the chat app.
 // Handles: auth (login/register), contact list, real-time messaging via socket.io,
 // typing indicators, online presence, read receipts.
-
 const API = 'https://chatty-backend-1-jp3h.onrender.com';
-
 let state = {
   token: localStorage.getItem('chatty_token') || null,
   me: JSON.parse(localStorage.getItem('chatty_me') || 'null'),
