@@ -6,7 +6,6 @@ const mongoose = require('mongoose');
 const User = require('./models/User');
 const Message = require('./models/Message');
 
-const path = require('path');
 const cors = require('cors');
 
 require('dotenv').config();
@@ -132,6 +131,7 @@ app.post('/api/messages', auth, async (req, res) => { // 'auth' makes it protect
     res.status(500).json({ error: err.message });
   }
 });
+// Serve static frontend files
 const path = require('path');
 app.use(express.static(path.join(__dirname, 'public')));
 
