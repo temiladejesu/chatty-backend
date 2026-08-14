@@ -53,7 +53,6 @@ io.on('connection', (socket) => {
 
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const User = require('./models/User'); // if you made the file above
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecretkey'; // add this to .env later
 
 // REGISTER
