@@ -3,11 +3,8 @@ const app = express();
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 const mongoose = require('mongoose');
-
-const userSchema = new mongoose.Schema({
-  username: { type: String, required: true, unique: true },
-  password: { type: String, required: true }
-}, { timestamps: true });
+const User = require('./models/User');
+const Message = require('./models/Message');
 
 module.exports = mongoose.model('User', userSchema);
 const path = require('path');
@@ -145,6 +142,7 @@ app.post('/api/messages', auth, async (req, res) => { // 'auth' makes it protect
     res.status(500).json({ error: err.message });
   }
 });
-http.listen(PORT, () => {
-  console.log(`listening on ${PORT}`);
+const PORT = process.env.PORT || 10000;
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
